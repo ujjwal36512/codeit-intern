@@ -1,0 +1,262 @@
+"""Beginner Python exercises: lists, dicts, loops, functions, file handling,
+plus a setup check for numpy, pandas, matplotlib and scikit-learn.
+
+Run with:  python python_exercises.py
+Install libraries first (once):  pip install numpy pandas matplotlib scikit-learn
+"""
+
+import os
+import tempfile
+
+
+# ---------------------------------------------------------------- LISTS
+def ex01_sum_and_average(numbers):
+    """Return the sum and average of a list of numbers."""
+    total = sum(numbers)
+    return total, total / len(numbers)
+
+
+def ex02_largest_and_smallest(numbers):
+    """Return (largest, smallest) without using max() or min()."""
+    largest = smallest = numbers[0]
+    for n in numbers:
+        if n > largest:
+            largest = n
+        if n < smallest:
+            smallest = n
+    return largest, smallest
+
+
+def ex03_remove_duplicates(items):
+    """Remove duplicates but keep the original order."""
+    seen = []
+    for item in items:
+        if item not in seen:
+            seen.append(item)
+    return seen
+
+
+def ex04_reverse_list(items):
+    """Return a reversed copy of the list using slicing."""
+    return items[::-1]
+
+
+def ex05_even_squares(numbers):
+    """Use a list comprehension: squares of the even numbers only."""
+    return [n * n for n in numbers if n % 2 == 0]
+
+
+# ---------------------------------------------------------------- DICTS
+def ex06_count_words(text):
+    """Count how often each word appears (case-insensitive)."""
+    counts = {}
+    for word in text.lower().split():
+        counts[word] = counts.get(word, 0) + 1
+    return counts
+
+
+def ex07_invert_dict(d):
+    """Swap keys and values: {'a': 1} -> {1: 'a'}."""
+    return {value: key for key, value in d.items()}
+
+
+def ex08_highest_scorer(scores):
+    """Return the name with the highest score from {name: score}."""
+    best_name = None
+    best_score = float("-inf")
+    for name, score in scores.items():
+        if score > best_score:
+            best_name, best_score = name, score
+    return best_name
+
+
+def ex09_group_by_length(words):
+    """Group words by their length: {3: ['cat', 'dog'], 5: ['apple']}."""
+    groups = {}
+    for word in words:
+        groups.setdefault(len(word), []).append(word)
+    return groups
+
+
+# ---------------------------------------------------------------- LOOPS
+def ex10_fizzbuzz(n):
+    """Classic FizzBuzz from 1 to n, returned as a list of strings."""
+    result = []
+    for i in range(1, n + 1):
+        if i % 15 == 0:
+            result.append("FizzBuzz")
+        elif i % 3 == 0:
+            result.append("Fizz")
+        elif i % 5 == 0:
+            result.append("Buzz")
+        else:
+            result.append(str(i))
+    return result
+
+
+def ex11_multiplication_table(n, up_to=5):
+    """Return lines of the multiplication table for n."""
+    return [f"{n} x {i} = {n * i}" for i in range(1, up_to + 1)]
+
+
+def ex12_factorial(n):
+    """Compute n! using a while loop."""
+    result = 1
+    while n > 1:
+        result *= n
+        n -= 1
+    return result
+
+
+# ------------------------------------------------------------ FUNCTIONS
+def ex13_is_palindrome(text):
+    """True if text reads the same forwards and backwards (ignores case/spaces)."""
+    cleaned = "".join(ch.lower() for ch in text if ch.isalnum())
+    return cleaned == cleaned[::-1]
+
+
+def ex14_is_prime(n):
+    """True if n is a prime number."""
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+
+def ex15_celsius_to_fahrenheit(c):
+    """Convert Celsius to Fahrenheit."""
+    return c * 9 / 5 + 32
+
+
+def ex16_fibonacci(n):
+    """Return the first n Fibonacci numbers."""
+    seq = []
+    a, b = 0, 1
+    for _ in range(n):
+        seq.append(a)
+        a, b = b, a + b
+    return seq
+
+
+# -------------------------------------------------------- FILE HANDLING
+def ex17_write_and_read(path, lines):
+    """Write lines to a file, then read them back."""
+    with open(path, "w") as f:
+        for line in lines:
+            f.write(line + "\n")
+    with open(path) as f:
+        return [line.strip() for line in f]
+
+
+def ex18_count_lines_and_words(path):
+    """Return (number of lines, number of words) in a text file."""
+    line_count = word_count = 0
+    with open(path) as f:
+        for line in f:
+            line_count += 1
+            word_count += len(line.split())
+    return line_count, word_count
+
+
+def ex19_append_to_file(path, text):
+    """Append a line to an existing file and return the new line count."""
+    with open(path, "a") as f:
+        f.write(text + "\n")
+    with open(path) as f:
+        return len(f.readlines())
+
+
+def ex20_csv_average(path):
+    """Write a tiny CSV by hand, then compute the average of its 'score' column."""
+    with open(path, "w") as f:
+        f.write("name,score\nAnna,90\nBen,75\nCara,85\n")
+    scores = []
+    with open(path) as f:
+        next(f)  # skip header
+        for line in f:
+            scores.append(int(line.strip().split(",")[1]))
+    return sum(scores) / len(scores)
+
+
+# ------------------------------------------------------------ SETUP CHECK
+def setup_check():
+    """Import each library and print its version."""
+    print("\n=== Library setup check ===")
+    ok = True
+    for name in ["numpy", "pandas", "matplotlib", "sklearn"]:
+        try:
+            module = __import__(name)
+            print(f"  OK   {name:<12} {module.__version__}")
+        except ImportError:
+            ok = False
+            print(f"  FAIL {name:<12} not installed -> pip install "
+                  f"{'scikit-learn' if name == 'sklearn' else name}")
+    if not ok:
+        return
+
+    # Tiny end-to-end test using all four libraries.
+    import matplotlib
+    matplotlib.use("Agg")  # no window needed
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    from sklearn.linear_model import LinearRegression
+
+    x = np.arange(10).reshape(-1, 1)
+    y = 3 * x.ravel() + 2
+    df = pd.DataFrame({"x": x.ravel(), "y": y})
+    model = LinearRegression().fit(df[["x"]], df["y"])
+    plt.plot(df["x"], model.predict(df[["x"]]))
+    plt.savefig(os.path.join(tempfile.gettempdir(), "setup_test.png"))
+    print(f"  Mini test: learned slope={model.coef_[0]:.1f}, "
+          f"intercept={model.intercept_:.1f} (expected 3.0 and 2.0)")
+    print("  All libraries work!")
+
+
+# ------------------------------------------------------------------ MAIN
+def main():
+    tmp = os.path.join(tempfile.gettempdir(), "exercise_demo.txt")
+    csv_path = os.path.join(tempfile.gettempdir(), "exercise_scores.csv")
+
+    print("=== Lists ===")
+    print("01 sum/avg:", ex01_sum_and_average([4, 8, 15, 16, 23, 42]))
+    print("02 max/min:", ex02_largest_and_smallest([7, 2, 9, 4]))
+    print("03 dedupe:", ex03_remove_duplicates([1, 2, 2, 3, 1, 4]))
+    print("04 reverse:", ex04_reverse_list(["a", "b", "c"]))
+    print("05 even squares:", ex05_even_squares(range(1, 11)))
+
+    print("\n=== Dictionaries ===")
+    print("06 word count:", ex06_count_words("the cat and the hat"))
+    print("07 invert:", ex07_invert_dict({"a": 1, "b": 2}))
+    print("08 top scorer:", ex08_highest_scorer({"Ann": 88, "Bo": 95, "Cy": 70}))
+    print("09 group:", ex09_group_by_length(["cat", "dog", "apple", "pear", "fig"]))
+
+    print("\n=== Loops ===")
+    print("10 fizzbuzz:", ex10_fizzbuzz(15))
+    print("11 table:", ex11_multiplication_table(7))
+    print("12 factorial(5):", ex12_factorial(5))
+
+    print("\n=== Functions ===")
+    print("13 palindrome:", ex13_is_palindrome("A man a plan a canal Panama"))
+    print("14 primes <30:", [n for n in range(30) if ex14_is_prime(n)])
+    print("15 36.6C in F:", round(ex15_celsius_to_fahrenheit(36.6), 1))
+    print("16 fibonacci:", ex16_fibonacci(10))
+
+    print("\n=== File handling ===")
+    print("17 write/read:", ex17_write_and_read(tmp, ["hello world", "python is fun"]))
+    print("18 lines/words:", ex18_count_lines_and_words(tmp))
+    print("19 append -> lines:", ex19_append_to_file(tmp, "one more line"))
+    print("20 csv average:", ex20_csv_average(csv_path))
+
+    # Clean up temporary files
+    for p in (tmp, csv_path):
+        if os.path.exists(p):
+            os.remove(p)
+
+    setup_check()
+
+
+if __name__ == "__main__":
+    main()
