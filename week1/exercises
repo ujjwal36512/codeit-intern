@@ -1,8 +1,4 @@
 """Beginner Python exercises: lists, dicts, loops, functions, file handling,
-plus a setup check for numpy, pandas, matplotlib and scikit-learn.
-
-Run with:  python python_exercises.py
-Install libraries first (once):  pip install numpy pandas matplotlib scikit-learn
 """
 
 import os
